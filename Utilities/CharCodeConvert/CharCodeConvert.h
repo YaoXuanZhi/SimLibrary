@@ -1,9 +1,18 @@
-#ifndef __ICONV_H
-#define __ICONV_H
-
+/*****************************************************************************
+*  @file     CharCodeConvert.h
+*  @brief    字符串编码转换
+*  @note
+*  通过MultiByteToWideChar()、WideCharToMultiByte()这Windows API
+*  来实现UIF16、MBCS、UTF8字符串编码的相互转换的
+*  拓展链接：
+*  文件编码检测：https://github.com/BYVoid/uchardet
+*  文件编码转换：http://www.gnu.org/software/libiconv/
+*****************************************************************************/
+#ifndef __CHARCODECONVERT_H
+#define __CHARCODECONVERT_H
 #include <string>
 
-namespace ICharCodeConvert {
+namespace CharCodeConvert {
 
 /////////////////////////转换字符编码/////////////////////////
 /** 
@@ -127,12 +136,12 @@ bool HasUTF8(const char *szSource);
 void main()
 {
 	std::string szSrc1 = "你好，世界！";
-	std::string szDst_Utf8 = ICharCodeConvert::MBCSToUTF8(szSrc1);
-	std::wstring szDst_Utf16 = ICharCodeConvert::MBCSToUTF16(szSrc1);
+	std::string szDst_Utf8 = CharCodeConvert::MBCSToUTF8(szSrc1);
+	std::wstring szDst_Utf16 = CharCodeConvert::MBCSToUTF16(szSrc1);
 
 	std::wstring szSrc2 = L"你好，世界！";
-	std::string szDst_Mbcs = ICharCodeConvert::UTF16ToMBCS(szSrc2);
-	std::string szDst_Utf82 = ICharCodeConvert::UTF16ToUTF8(szSrc2);
+	std::string szDst_Mbcs = CharCodeConvert::UTF16ToMBCS(szSrc2);
+	std::string szDst_Utf82 = CharCodeConvert::UTF16ToUTF8(szSrc2);
 
 	if (szDst_Utf8 == szDst_Utf82)
 	{

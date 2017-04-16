@@ -6,6 +6,7 @@
 *  源码来源于：《让程序在崩溃时体面的退出之总结》
 *  链接：http://blog.csdn.net/starlee/article/details/6662011
 *  MSDN相关介绍：https://msdn.microsoft.com/en-us/library/windows/desktop/ms679294(v=vs.85).aspx
+*  拓展链接：https://drdump.com/crash-reporting-system
 *  此库需要兼容VC 6.0，最好是通过动态调用的形式来直接使用此库
 *****************************************************************************/
 #ifndef __CRESPONSECRASHES_H
@@ -42,6 +43,13 @@ private:
 
 public:
 	static CResponseCrashes &GetInstance();
+
+	/** 
+	* @brief: 开始监控程序崩溃
+	* @return 无
+	* @note   
+	* 
+	*/
 	void MonitorApplicationCrash();
 	
 public:
