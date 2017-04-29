@@ -220,7 +220,7 @@ CResponseCrashes & CResponseCrashes::GetInstance()
 	return rcObj;
 }
 
-void CResponseCrashes::MonitorApplicationCrash()
+void CResponseCrashes::StartMonitor()
 {
 	SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);
 }

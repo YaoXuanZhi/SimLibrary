@@ -113,8 +113,7 @@ std::string UTF16ToUTF8(std::wstring szUtf16);
 * @brief: 判断字符串内是否包含utf8编码字符，
 *		  以此判断此字符串是否为utf8编码
 * @param[in] const  char*  待检测的字符串
-* @return  如果返回为true，则此字符串属于utf8编码，
-*		   否则属于gbk编码（也就是mbcs）
+* @return  如果返回为true，则此字符串属于utf8编码		   
 * @note 
 * 此函数提取自licecap项目
 */

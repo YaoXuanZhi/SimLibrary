@@ -1135,11 +1135,11 @@ bool IRegEditor::BatchSetRegValueEx(std::map<RegKeyCtx, RegValueCtx> mapValues)
 	for (std::map<RegKeyCtx, RegValueCtx>::iterator it = mapValues.begin();
 	it != mapValues.end(); it++)
 	{
-		//if (!SetRegValueEx(it->first, it->second))
-		//{
-		//	if(!bResult)
-		//		bResult = false;
-		//}
+		if (!SetRegValueEx(it->first, it->second))
+		{
+			if(!bResult)
+				bResult = false;
+		}
 	}
 	return bResult;
 }

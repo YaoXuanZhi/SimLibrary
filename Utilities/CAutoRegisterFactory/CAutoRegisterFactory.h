@@ -170,3 +170,116 @@ protected:
 };
 
 #endif
+
+/*********************************调用演示************************************
+#include <string>
+#include <tchar.h>
+#include <windows.h>
+#pragma warning(disable:4996)
+
+#ifndef tstring
+#ifndef _UNICODE
+#define tstring std::string
+#else
+#define tstring std::wstring
+#endif
+#endif
+
+void DebugStringEx(TCHAR* str, ...)
+{
+	va_list args;
+	TCHAR szText[1024] = { 0 };
+	va_start(args, str);
+	_vstprintf(szText, str, args);
+	OutputDebugString(szText);
+	va_end(args);
+}
+
+class IObject {
+public:
+	IObject() { m_szName = _T("IObject"); }
+	virtual ~IObject() {}
+	virtual const TCHAR * GetName() { return &m_szName[0]; }
+	virtual void Print() { DebugStringEx(_T("%s:%s\n"), _T("在IObject内"), &m_szName[0]); }
+protected:
+	tstring m_szName;
+};
+
+class IObject1st :public IObject
+{
+public:
+	IObject1st() { m_szName = _T("IObject1st"); }
+	virtual ~IObject1st() {}
+	virtual void Print() { DebugStringEx(_T("%s:%s\n"), _T("在IObject1st内"), &m_szName[0]); }
+};
+
+class IObject2nd :public IObject1st
+{
+public:
+	IObject2nd() { m_szName = _T("IObject2nd"); }
+	virtual ~IObject2nd() {}
+	virtual void Print() { DebugStringEx(_T("%s:%s\n"), _T("在IObject2nd内"), &m_szName[0]); }
+};
+
+template<typename TBase>
+class TplClassOfIObject
+{
+public:
+	TplClassOfIObject() :m_pTemp(NULL)
+	{
+		m_pTemp = new TplClassTemplate<TBase, IObject>;
+	}
+
+	operator IForwarder<IObject>*()
+	{
+		return m_pTemp;
+	}
+private:
+	IForwarder<IObject> *m_pTemp;
+};
+
+class CIObjectFactory
+{
+public:
+	void RegisterIObject(IForwarder<IObject> *pObj, bool bIsOverWrite = false)
+	{
+		if (NULL == pObj)
+			return;
+		m_IObjectFactory.RegisterFactory(pObj->InvokeClass()->GetName(), pObj, bIsOverWrite);
+	}
+
+	void UnregisterIObject(tstring szName) { m_IObjectFactory.UnregisterFactory(szName); }
+
+	IObject *InvokeIObject(tstring szName) { return m_IObjectFactory.InvokeClass(szName); };
+
+private:
+	CAutoRegisterFactory<tstring, IObject> m_IObjectFactory;
+};
+
+//原始的注册方式
+void main1st()
+{
+	CAutoRegisterFactory<tstring, IObject> tempfactory;
+	TplClassTemplate<IObject2nd, IObject>* pNew = new TplClassTemplate<IObject2nd, IObject>;
+	tempfactory.RegisterFactory(pNew->InvokeClass()->GetName(), pNew);
+
+	IObject *pTemp = tempfactory.InvokeClass(pNew->InvokeClass()->GetName());
+	if (NULL != pTemp)
+	{
+		pTemp->Print();
+	}
+}
+
+//推荐的注册方式
+void main2nd()
+{
+	CIObjectFactory tempfactory;
+	tempfactory.RegisterIObject(TplClassOfIObject<IObject1st>());
+	tempfactory.RegisterIObject(TplClassOfIObject<IObject2nd>());
+	IObject *pTemp = tempfactory.InvokeIObject(_T("IObject1st"));
+	if (NULL != pTemp)
+	{
+		pTemp->Print();
+	}
+}
+*********************************调用演示************************************/
