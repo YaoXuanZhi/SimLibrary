@@ -1,4 +1,4 @@
-#include "IRegEditor.h"
+#include "RegEditor.h"
 #include <assert.h>
 #include <algorithm>
 #pragma warning(disable:4996)
@@ -28,7 +28,7 @@ RegKeyCtx::RegKeyCtx(tstring szKeyPathWithRoot, tstring szKeyName)
 {
 	HKEY hKey = NULL;
 	TCHAR szKeyPath[MAX_PATH] = { 0 };
-	IRegEditor::AnalyzeKeyPathWithRoot(&szKeyPathWithRoot[0], hKey, szKeyPath);
+	RegEditor::AnalyzeKeyPathWithRoot(&szKeyPathWithRoot[0], hKey, szKeyPath);
 	m_hKey = hKey;
 	m_szKeyPathWithoutRoot = szKeyPath;
 	m_szKeyName = szKeyName;
@@ -630,7 +630,7 @@ void RegValueCtx::SetBufferByHexStr(tstring szHexStr, tstring szSpliteFlag, bool
 	pBlock = NULL;
 }
 
-bool IRegEditor::IsOSX64()
+bool RegEditor::IsOSX64()
 {
 #if	_WIN64
 	return true;
@@ -641,7 +641,7 @@ bool IRegEditor::IsOSX64()
 #endif
 }
 
-bool IRegEditor::AnalyzeKeyPathWithRoot(const TCHAR * szKeyPathWithRoot, HKEY & hKey,
+bool RegEditor::AnalyzeKeyPathWithRoot(const TCHAR * szKeyPathWithRoot, HKEY & hKey,
 	TCHAR * szKeyPath)
 {
 	if (NULL == szKeyPathWithRoot)
@@ -683,7 +683,7 @@ bool IRegEditor::AnalyzeKeyPathWithRoot(const TCHAR * szKeyPathWithRoot, HKEY & 
 	return true;
 }
 
-LSTATUS IRegEditor::RegOpenKeyUtil(HKEY hKey, const TCHAR * szKeyPath, HKEY & hSubKey)
+LSTATUS RegEditor::RegOpenKeyUtil(HKEY hKey, const TCHAR * szKeyPath, HKEY & hSubKey)
 {
 	LSTATUS lStatus = ERROR_SUCCESS;
 	if (IsOSX64())
@@ -706,7 +706,7 @@ LSTATUS IRegEditor::RegOpenKeyUtil(HKEY hKey, const TCHAR * szKeyPath, HKEY & hS
 	return lStatus;
 }
 
-LSTATUS IRegEditor::RegDeleteKeyUtil(HKEY hKeyRoot, TCHAR * szSubKey)
+LSTATUS RegEditor::RegDeleteKeyUtil(HKEY hKeyRoot, TCHAR * szSubKey)
 {
 	LSTATUS lStatus = ERROR_SUCCESS;
 	if (IsOSX64())
@@ -723,7 +723,7 @@ LSTATUS IRegEditor::RegDeleteKeyUtil(HKEY hKeyRoot, TCHAR * szSubKey)
 	return lStatus;
 }
 
-bool IRegEditor::RegDelNodeRecurse(HKEY hKeyRoot, TCHAR * szKeyPath)
+bool RegEditor::RegDelNodeRecurse(HKEY hKeyRoot, TCHAR * szKeyPath)
 {
 	TCHAR* lpEnd = NULL;
 	LSTATUS lStatus = ERROR_SUCCESS;
@@ -791,7 +791,7 @@ bool IRegEditor::RegDelNodeRecurse(HKEY hKeyRoot, TCHAR * szKeyPath)
 	return false;
 }
 
-bool IRegEditor::GetRegValueEx(HKEY hKey,const TCHAR * szKeyPath,
+bool RegEditor::GetRegValueEx(HKEY hKey,const TCHAR * szKeyPath,
 	const TCHAR * szKeyName, RegValueCtx & KeyValue)
 {
 	bool bResult = false;
@@ -836,7 +836,7 @@ bool IRegEditor::GetRegValueEx(HKEY hKey,const TCHAR * szKeyPath,
 	return bResult;
 }
 
-bool IRegEditor::GetRegValueEx(const TCHAR * szKeyPathWithRoot, 
+bool RegEditor::GetRegValueEx(const TCHAR * szKeyPathWithRoot, 
 	const TCHAR * szKeyName, RegValueCtx & KeyValue)
 {
 	bool bResult = false;
@@ -847,7 +847,7 @@ bool IRegEditor::GetRegValueEx(const TCHAR * szKeyPathWithRoot,
 	return bResult;
 }
 
-bool IRegEditor::SetRegValueEx(HKEY hKey,const TCHAR * szKeyPath,
+bool RegEditor::SetRegValueEx(HKEY hKey,const TCHAR * szKeyPath,
 	const TCHAR * szKeyName, RegValueCtx KeyValue)
 {
 	bool bResult = false;
@@ -875,7 +875,7 @@ bool IRegEditor::SetRegValueEx(HKEY hKey,const TCHAR * szKeyPath,
 	return bResult;
 }
 
-bool IRegEditor::SetRegValueEx(const TCHAR * szKeyPathWithRoot, 
+bool RegEditor::SetRegValueEx(const TCHAR * szKeyPathWithRoot, 
 	const TCHAR * szKeyName, RegValueCtx KeyValue)
 {
 	HKEY hKey = NULL;
@@ -886,7 +886,7 @@ bool IRegEditor::SetRegValueEx(const TCHAR * szKeyPathWithRoot,
 
 
 //使用递归的方式来删除当前路径下的所有子目录
-bool IRegEditor::DeleteRegSubKeyByPath(const TCHAR * szKeyPathWithRoot)
+bool RegEditor::DeleteRegSubKeyByPath(const TCHAR * szKeyPathWithRoot)
 {
 	HKEY hKey = NULL;
 	TCHAR szKeyPath[2048] = { 0 };
@@ -894,7 +894,7 @@ bool IRegEditor::DeleteRegSubKeyByPath(const TCHAR * szKeyPathWithRoot)
 	return DeleteRegSubKeyByPath(hKey, szKeyPath);
 }
 
-bool IRegEditor::DeleteRegSubKeyByPath(HKEY hKeyRoot, const TCHAR* szKeyPath)
+bool RegEditor::DeleteRegSubKeyByPath(HKEY hKeyRoot, const TCHAR* szKeyPath)
 {
 	//要确保子键的字符串足够大
 	TCHAR szDelKey[MAX_PATH * 2] = { 0 };
@@ -902,7 +902,7 @@ bool IRegEditor::DeleteRegSubKeyByPath(HKEY hKeyRoot, const TCHAR* szKeyPath)
 	return RegDelNodeRecurse(hKeyRoot, szDelKey);
 }
 
-bool IRegEditor::DeleteRegValueByPath(HKEY hKey,
+bool RegEditor::DeleteRegValueByPath(HKEY hKey,
 	const TCHAR * szKeyPath, const TCHAR * szKeyName)
 {
 	bool bResult = false;
@@ -919,7 +919,7 @@ bool IRegEditor::DeleteRegValueByPath(HKEY hKey,
 	return bResult;
 }
 
-bool IRegEditor::DeleteRegValueByPath(const TCHAR * szKeyPathWithRoot,
+bool RegEditor::DeleteRegValueByPath(const TCHAR * szKeyPathWithRoot,
 	const TCHAR * szKeyName)
 {
 	HKEY hKey = NULL;
@@ -928,7 +928,7 @@ bool IRegEditor::DeleteRegValueByPath(const TCHAR * szKeyPathWithRoot,
 	return DeleteRegValueByPath(hKey, szKeyPath, szKeyName);
 }
 
-bool IRegEditor::EnumRegSubKeys(HKEY hKey, const TCHAR * szKeyPath,
+bool RegEditor::EnumRegSubKeys(HKEY hKey, const TCHAR * szKeyPath,
 	OnCallBackEnumRegKey EnumRegSubKeyProc, void * pParam)
 {
 	bool bResult = false;
@@ -962,7 +962,7 @@ bool IRegEditor::EnumRegSubKeys(HKEY hKey, const TCHAR * szKeyPath,
 	return bResult;
 }
 
-bool IRegEditor::EnumRegSubKeys(const TCHAR * szKeyPathWithRoot,
+bool RegEditor::EnumRegSubKeys(const TCHAR * szKeyPathWithRoot,
 	OnCallBackEnumRegKey EnumRegSubKeyProc, void * pParam)
 {
 	HKEY hKey = NULL;
@@ -971,7 +971,7 @@ bool IRegEditor::EnumRegSubKeys(const TCHAR * szKeyPathWithRoot,
 	return EnumRegSubKeys(hKey, szKeyPath, EnumRegSubKeyProc, pParam);
 }
 
-bool IRegEditor::EnumRegValues(HKEY hKey, const TCHAR * szKeyPath, 
+bool RegEditor::EnumRegValues(HKEY hKey, const TCHAR * szKeyPath, 
 	OnCallBackEnumRegValue EnumRegKeyValueProc, void * pParam)
 {
 	bool bResult = false;
@@ -1020,7 +1020,7 @@ bool IRegEditor::EnumRegValues(HKEY hKey, const TCHAR * szKeyPath,
 	return bResult;
 }
 
-bool IRegEditor::EnumRegValues(const TCHAR * szKeyPathWithRoot,
+bool RegEditor::EnumRegValues(const TCHAR * szKeyPathWithRoot,
 	OnCallBackEnumRegValue EnumRegKeyValueProc, void * pParam)
 {
 	HKEY hKey = NULL;
@@ -1029,7 +1029,7 @@ bool IRegEditor::EnumRegValues(const TCHAR * szKeyPathWithRoot,
 	return EnumRegValues(hKey, szKeyPath, EnumRegKeyValueProc, pParam);
 }
 
-bool IRegEditor::BatchGetRegValueEx(HKEY hKeyRoot, const TCHAR * szKeyPath,
+bool RegEditor::BatchGetRegValueEx(HKEY hKeyRoot, const TCHAR * szKeyPath,
 	std::map<tstring, RegValueCtx>& mapValues)
 {
 	if (NULL == szKeyPath || _tcslen(szKeyPath) < 1)
@@ -1045,7 +1045,7 @@ bool IRegEditor::BatchGetRegValueEx(HKEY hKeyRoot, const TCHAR * szKeyPath,
 	return true;
 }
 
-bool IRegEditor::BatchGetRegValueEx(const TCHAR * szKeyPathWithRoot, 
+bool RegEditor::BatchGetRegValueEx(const TCHAR * szKeyPathWithRoot, 
 	std::map<tstring, RegValueCtx>& mapValues)
 {
 	HKEY hKey = NULL;
@@ -1055,7 +1055,7 @@ bool IRegEditor::BatchGetRegValueEx(const TCHAR * szKeyPathWithRoot,
 	return true;
 }
 
-bool IRegEditor::GetRegValueEx(RegKeyCtx ConditionObj, RegValueCtx & ResultObj)
+bool RegEditor::GetRegValueEx(RegKeyCtx ConditionObj, RegValueCtx & ResultObj)
 {
 	if (!ConditionObj.IsVaildCondition())
 		return false;
@@ -1063,7 +1063,7 @@ bool IRegEditor::GetRegValueEx(RegKeyCtx ConditionObj, RegValueCtx & ResultObj)
 		ConditionObj.GetKeyName(), ResultObj);
 }
 
-bool IRegEditor::SetRegValueEx(RegKeyCtx ConditionObj, RegValueCtx ResultObj)
+bool RegEditor::SetRegValueEx(RegKeyCtx ConditionObj, RegValueCtx ResultObj)
 {
 	//判断子键路径是否有效
 	if (!ConditionObj.IsVaildCondition())
@@ -1081,7 +1081,7 @@ bool IRegEditor::SetRegValueEx(RegKeyCtx ConditionObj, RegValueCtx ResultObj)
 		ConditionObj.GetKeyName(), ResultObj);
 }
 
-bool IRegEditor::DeleteRegSubKeyByPath(RegKeyCtx ConditionObj)
+bool RegEditor::DeleteRegSubKeyByPath(RegKeyCtx ConditionObj)
 {
 	if (!ConditionObj.IsVaildCondition())
 		return false;
@@ -1089,7 +1089,7 @@ bool IRegEditor::DeleteRegSubKeyByPath(RegKeyCtx ConditionObj)
 		ConditionObj.GetKeyPath());
 }
 
-bool IRegEditor::DeleteRegValueByPath(RegKeyCtx ConditionObj)
+bool RegEditor::DeleteRegValueByPath(RegKeyCtx ConditionObj)
 {
 	if (!ConditionObj.IsVaildCondition())
 		return false;
@@ -1097,7 +1097,7 @@ bool IRegEditor::DeleteRegValueByPath(RegKeyCtx ConditionObj)
 		ConditionObj.GetKeyPath(), ConditionObj.GetKeyName());
 }
 
-bool IRegEditor::EnumRegSubKeys(RegKeyCtx ConditionObj, 
+bool RegEditor::EnumRegSubKeys(RegKeyCtx ConditionObj, 
 	OnCallBackEnumRegKey EnumRegSubKeyProc, void * pParam)
 {
 	if (!ConditionObj.IsVaildCondition())
@@ -1106,7 +1106,7 @@ bool IRegEditor::EnumRegSubKeys(RegKeyCtx ConditionObj,
 		ConditionObj.GetKeyPath(), EnumRegSubKeyProc, pParam);
 }
 
-bool IRegEditor::EnumRegValues(RegKeyCtx ConditionObj, 
+bool RegEditor::EnumRegValues(RegKeyCtx ConditionObj, 
 	OnCallBackEnumRegValue EnumRegKeyValueProc, void * pParam)
 {
 	if (!ConditionObj.IsVaildCondition())
@@ -1115,7 +1115,7 @@ bool IRegEditor::EnumRegValues(RegKeyCtx ConditionObj,
 		ConditionObj.GetKeyPath(), EnumRegKeyValueProc, pParam);
 }
 
-bool IRegEditor::BatchGetRegValueEx(RegKeyCtx ConditionObj, 
+bool RegEditor::BatchGetRegValueEx(RegKeyCtx ConditionObj, 
 	std::map<RegKeyCtx, RegValueCtx> &mapValues)
 {
 	if (!ConditionObj.IsVaildCondition())
@@ -1129,7 +1129,7 @@ bool IRegEditor::BatchGetRegValueEx(RegKeyCtx ConditionObj,
 	return true;
 }
 
-bool IRegEditor::BatchSetRegValueEx(std::map<RegKeyCtx, RegValueCtx> mapValues)
+bool RegEditor::BatchSetRegValueEx(std::map<RegKeyCtx, RegValueCtx> mapValues)
 {
 	bool bResult = true;
 	for (std::map<RegKeyCtx, RegValueCtx>::iterator it = mapValues.begin();

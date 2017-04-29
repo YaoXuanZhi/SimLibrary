@@ -4,15 +4,6 @@
 #include <time.h>
 #pragma warning(disable:4996)
 
-/**
-* @brief: 安全拷贝字符串函数
-* @param[out] char*  szDest  目标字符串
-* @param[in] size_t  nMaxDestSize  目标字符串的最大长度
-* @param[in] const char*  szSrc  源字符串
-* @return 无
-* @note
-*
-*/
 static void SafeStrCpy(char* szDest, size_t nMaxDestSize, const char* szSrc)
 {
 	if (nMaxDestSize <= 0) return;
@@ -27,12 +18,6 @@ static void SafeStrCpy(char* szDest, size_t nMaxDestSize, const char* szSrc)
 	}
 }
 
-/**
-* @brief: 获得本程序的进程名
-* @return TCHAR* 返回本程序的进程名
-* @note
-*
-*/
 static char* GetProcessName()
 {
 	static char szFileFullPath[MAX_PATH] = { 0 }, szProcessName[MAX_PATH] = { 0 };

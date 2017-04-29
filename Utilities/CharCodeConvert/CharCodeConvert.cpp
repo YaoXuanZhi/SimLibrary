@@ -1,10 +1,10 @@
-#include "ICharCodeConvert.h"
+#include "CharCodeConvert.h"
 #include <windows.h>
 /*
 注意，因为在VC6.0里的std::string并没有clear()成员函数，
 因此为了兼容低版本的MSVC，采用resize(0)来释放std::string的内存
 */
-namespace ICharCodeConvert 
+namespace CharCodeConvert 
 {
 	std::string MBCSToUTF8(const char * szMbcs, int mbcsLen)
 	{
