@@ -6,14 +6,11 @@
 *  源码来源于：《让程序在崩溃时体面的退出之总结》
 *  链接：http://blog.csdn.net/starlee/article/details/6662011
 *  MSDN相关介绍：https://msdn.microsoft.com/en-us/library/windows/desktop/ms679294(v=vs.85).aspx
-<<<<<<< HEAD
 *  拓展资料：在TortoiseGit开源项目之中，ext\CrashServer目录下，专门为程序崩溃时收集信息编写了一个
 *  类库----Doctor Dump SDK，相关讨论：https://drdump.com/crash-reporting-system 和 
 *  http://www.geardownload.com/development/crashrpt-cpp-download.html
-=======
 *  拓展链接：https://drdump.com/crash-reporting-system
 *  此库需要兼容VC 6.0，最好是通过动态调用的形式来直接使用此库
->>>>>>> 8322139f7e130b58a142d2f20da6fea663e4afd4
 *****************************************************************************/
 #ifndef __CRESPONSECRASHES_H
 #define __CRESPONSECRASHES_H
@@ -48,9 +45,7 @@ private:
 
 public:
 	static CResponseCrashes &GetInstance();
-<<<<<<< HEAD
 	void StartMonitor();
-=======
 
 	/** 
 	* @brief: 开始监控程序崩溃
@@ -59,7 +54,6 @@ public:
 	* 
 	*/
 	void MonitorApplicationCrash();
->>>>>>> 8322139f7e130b58a142d2f20da6fea663e4afd4
 	
 public:
 	/** @brief 崩溃信息 */
