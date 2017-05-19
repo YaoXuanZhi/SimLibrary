@@ -6,9 +6,9 @@
 
 /**
 * @class IForwarder
-* @brief 转发抽象类                                                                                         
-* @note   
-* 把工厂模式下的两种常用调用方式进行抽象，结果如下
+* @brief 转发抽象类
+* @note
+* 把工厂模式下的两种常用的调用方式进行抽象，结果如下
 * ：生成副本[CloneClass()]/直接调用[InvokeClass()]
 */
 template<typename TBase>
@@ -18,11 +18,11 @@ public:
 	virtual ~IForwarder() {}
 
 public:
-	/** 
+	/**
 	* @brief: 通过此接口来拷贝一份类指针的“马甲”
 	* @return TBase* 返回基类指针的副本
-	* @note   
-	* 
+	* @note
+	*
 	*/
 	virtual TBase *CloneClass() = 0;
 
@@ -35,39 +35,27 @@ public:
 	virtual TBase* InvokeClass() = 0;
 };
 
-template<typename TSub,typename TBase>
-class TplClassTemplate :public IForwarder<TBase>
-{
-private:
-	TSub m_Obj;
-
-public:
-	virtual ~TplClassTemplate() {}
-
-public:
-	virtual TBase* CloneClass() { return new TSub; }
-	virtual TBase* InvokeClass() { return &m_Obj; }
-};
-
 /**
 * @class CAutoRegisterFactory
-* @brief 一个支持自动注册的工厂类模板                                                                                         
-* @note   
+* @brief 一个支持自动注册的工厂类模板
+* @note
 * 注意，如果TKey是自定义数据类型，那么请重载其关系运算符哦，
 * 具体看std::map的条件，通常仅需要重载运算符“<”，详情请看
 * https://msdn.microsoft.com/ZH-CN/library/s44w4h2s(v=VS.100,d=hv.2).aspx
+* 在gcc下编译可能遇到的问题：http://blog.csdn.net/pb1995/article/details/49532285
 */
-template<typename TKey,typename TBase>
+template<typename TKey, typename TBase>
 class CAutoRegisterFactory
 {
+	typedef IForwarder<TBase> ImpForwarder;
 public:
 	CAutoRegisterFactory() {}
-	virtual ~CAutoRegisterFactory() 
+	virtual ~CAutoRegisterFactory()
 	{
-		std::map<TKey, IForwarder<TBase>*>::iterator it = m_mapClasses.begin();
+		typename std::map<TKey, ImpForwarder*>::iterator it = m_mapClasses.begin();
 		for (; it != m_mapClasses.end(); it++)
 		{
-			IForwarder<TBase>* pTemp = it->second;
+			ImpForwarder* pTemp = it->second;
 			if (NULL != pTemp)
 			{
 				delete pTemp;
@@ -76,11 +64,11 @@ public:
 		}
 	}
 
-	/** 
+	/**
 	* @brief: 获得已注册的基类指针的副本
 	* @param[in] TKey  Key  索引基类指针的条件
 	* @return TBase* 返回基类指针，如果找不到，那么直接返回NULL
-	* @note   
+	* @note
 	* 注意，调用此函数之后，还需要验证一下所得指针是否有效
 	*/
 	TBase* CloneClass(TKey Key)
@@ -93,11 +81,11 @@ public:
 		return NULL;
 	}
 
-	/** 
+	/**
 	* @brief: 获得已注册的基类指针
 	* @param[in] TKey  Key  索引基类指针的条件
 	* @return TBase* 返回基类指针，如果找不到，那么直接返回NULL
-	* @note   
+	* @note
 	* 注意，调用此函数之后，还需要验证一下所得指针是否有效
 	*/
 	TBase* InvokeClass(TKey Key)
@@ -110,18 +98,18 @@ public:
 		return NULL;
 	}
 
-	/** 
+	/**
 	* @brief: 把工厂类实例之中的某类进行反注册
 	* @param[in] TKey  Key  索引基类指针的条件
 	* @return 无
-	* @note   
-	* 
+	* @note
+	*
 	*/
 	void UnregisterFactory(TKey Key)
 	{
-		if(!IsRegistered(Key))
+		if (!IsRegistered(Key))
 			return;
-		IForwarder<TBase> *pTemp = m_mapClasses[Key];
+		ImpForwarder *pTemp = m_mapClasses[Key];
 		if (NULL != pTemp)
 		{
 			delete pTemp;
@@ -130,18 +118,18 @@ public:
 		}
 	}
 
-	/** 
+	/**
 	* @brief: 将某类注册到工厂类实例之中
 	* @param[in] TKey  Key  某类在外部检索时的所用到的条件，通常采用字符串或枚举等类型
 	* @param[in|out] IForwarder<TBase>*  pObj  待注册到工厂类实例的基类指针，自动跳过空指针
 	* @param[in] bool  bIsOverWrite  如果为true，则重新注册此类，否则，直接释放待注册的基类指针
 	* @return 无
-	* @note   
+	* @note
 	* 本类会自动管理所有想要注册到本类工厂的基类指针，因此需要对重复注册的类指针自动进行释放
 	*/
-	void RegisterFactory(TKey Key, IForwarder<TBase> *pObj, bool bIsOverWrite = false)
+	void RegisterFactory(TKey Key, ImpForwarder *pObj, bool bIsOverWrite = false)
 	{
-		if(NULL==pObj)
+		if (NULL == pObj)
 		{
 			OutputDebugStringA("是不是想浑水摸鱼，待注册的基类指针竟然为空！！！\n");
 			return;
@@ -162,124 +150,11 @@ public:
 	}
 
 private:
-	std::map<TKey, IForwarder<TBase>*> m_mapClasses;
+	std::map<TKey, ImpForwarder*> m_mapClasses;
 
 protected:
-	bool IsRegistered(TKey Key) { return m_mapClasses.find(Key) != m_mapClasses.end()? true:false; }
+	bool IsRegistered(TKey Key) { return m_mapClasses.find(Key) != m_mapClasses.end() ? true : false; }
 
 };
 
 #endif
-
-/*********************************调用演示************************************
-#include <string>
-#include <tchar.h>
-#include <windows.h>
-#pragma warning(disable:4996)
-
-#ifndef tstring
-#ifndef _UNICODE
-#define tstring std::string
-#else
-#define tstring std::wstring
-#endif
-#endif
-
-void DebugStringEx(TCHAR* str, ...)
-{
-	va_list args;
-	TCHAR szText[1024] = { 0 };
-	va_start(args, str);
-	_vstprintf(szText, str, args);
-	OutputDebugString(szText);
-	va_end(args);
-}
-
-class IObject {
-public:
-	IObject() { m_szName = _T("IObject"); }
-	virtual ~IObject() {}
-	virtual const TCHAR * GetName() { return &m_szName[0]; }
-	virtual void Print() { DebugStringEx(_T("%s:%s\n"), _T("在IObject内"), &m_szName[0]); }
-protected:
-	tstring m_szName;
-};
-
-class IObject1st :public IObject
-{
-public:
-	IObject1st() { m_szName = _T("IObject1st"); }
-	virtual ~IObject1st() {}
-	virtual void Print() { DebugStringEx(_T("%s:%s\n"), _T("在IObject1st内"), &m_szName[0]); }
-};
-
-class IObject2nd :public IObject1st
-{
-public:
-	IObject2nd() { m_szName = _T("IObject2nd"); }
-	virtual ~IObject2nd() {}
-	virtual void Print() { DebugStringEx(_T("%s:%s\n"), _T("在IObject2nd内"), &m_szName[0]); }
-};
-
-template<typename TBase>
-class TplClassOfIObject
-{
-public:
-	TplClassOfIObject() :m_pTemp(NULL)
-	{
-		m_pTemp = new TplClassTemplate<TBase, IObject>;
-	}
-
-	operator IForwarder<IObject>*()
-	{
-		return m_pTemp;
-	}
-private:
-	IForwarder<IObject> *m_pTemp;
-};
-
-class CIObjectFactory
-{
-public:
-	void RegisterIObject(IForwarder<IObject> *pObj, bool bIsOverWrite = false)
-	{
-		if (NULL == pObj)
-			return;
-		m_IObjectFactory.RegisterFactory(pObj->InvokeClass()->GetName(), pObj, bIsOverWrite);
-	}
-
-	void UnregisterIObject(tstring szName) { m_IObjectFactory.UnregisterFactory(szName); }
-
-	IObject *InvokeIObject(tstring szName) { return m_IObjectFactory.InvokeClass(szName); };
-
-private:
-	CAutoRegisterFactory<tstring, IObject> m_IObjectFactory;
-};
-
-//原始的注册方式
-void main1st()
-{
-	CAutoRegisterFactory<tstring, IObject> tempfactory;
-	TplClassTemplate<IObject2nd, IObject>* pNew = new TplClassTemplate<IObject2nd, IObject>;
-	tempfactory.RegisterFactory(pNew->InvokeClass()->GetName(), pNew);
-
-	IObject *pTemp = tempfactory.InvokeClass(pNew->InvokeClass()->GetName());
-	if (NULL != pTemp)
-	{
-		pTemp->Print();
-	}
-}
-
-//推荐的注册方式
-void main2nd()
-{
-	CIObjectFactory tempfactory;
-	tempfactory.RegisterIObject(TplClassOfIObject<IObject1st>());
-	tempfactory.RegisterIObject(TplClassOfIObject<IObject2nd>());
-	IObject *pTemp = tempfactory.InvokeIObject(_T("IObject1st"));
-	if (NULL != pTemp)
-	{
-		pTemp->Print();
-	}
-}
-*********************************调用演示************************************/
