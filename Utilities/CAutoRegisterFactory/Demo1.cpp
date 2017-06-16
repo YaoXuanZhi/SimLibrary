@@ -65,7 +65,7 @@ public:
 #pragma region 原生模式
 void main1st()
 {
-	CAutoRegisterFactory<tstring, IObject> tempfactory;
+	CSingleRegisteredFactory<tstring, IObject> tempfactory;
 	TplClassTemplate<IObject2nd, IObject>* pNew = new TplClassTemplate<IObject2nd, IObject>;
 	tempfactory.RegisterFactory(pNew->InvokeClass()->GetName(), pNew);
 
@@ -93,7 +93,7 @@ public:
 	IObject *InvokeIObject(tstring szName) { return m_IObjectFactory.InvokeClass(szName); };
 
 private:
-	CAutoRegisterFactory<tstring, IObject> m_IObjectFactory;
+	CSingleRegisteredFactory<tstring, IObject> m_IObjectFactory;
 };
 
 template<typename TBase>
@@ -126,13 +126,33 @@ void main2nd()
 }
 #pragma endregion
 
+
+#define _CRTDBG_MAP_ALLOC 
+#include <crtdbg.h>
+#ifdef _DEBUG
+#define new   new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
+/** 
+* @brief: 开始检测内存泄漏
+* @return 无
+* @note   
+* 通常在主函数的首行里调用此函数，注意，仅在Debug下有效
+*/
+void EnableMemLeakCheck()
+{
+	_CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
+}
+
 void main()
 {
+	EnableMemLeakCheck();
 	main1st();
 	main2nd();
 }
 
 /*
-脚注：类似的应用场合：界面库里面的子控件的注册机制、多种文件编码的支持等等。通用公式为：假设想定义一个工厂类来管理多个不同的类，并且每个类的实例仅仅会创建
+脚注：类似的应用场合：界面库里面的子控件的注册机制、多种文件编码的支持等等。
+通用公式为：假设想定义一个工厂类来管理多个不同的类，并且每个类的实例仅仅会创建
 一份，那么这个Demo的套路演示就比较适合了
 */

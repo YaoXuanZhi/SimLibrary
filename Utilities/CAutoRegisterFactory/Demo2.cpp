@@ -200,7 +200,7 @@ public:
 
 private:
 	//注意，在事件订阅里面，事件ID通常是UINT类型的，因此在此直接指定即可。
-	CAutoRegisterFactory<TKEY, TSlotFunc> m_IObjectFactory;
+	CSingleRegisteredFactory<TKEY, TSlotFunc> m_IObjectFactory;
 };
 
 bool OnEvent_Create(char* szMsg)
@@ -278,8 +278,26 @@ public:
 	
 };
 
+#define _CRTDBG_MAP_ALLOC 
+#include <crtdbg.h>
+#ifdef _DEBUG
+#define new   new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
+/** 
+* @brief: 开始检测内存泄漏
+* @return 无
+* @note   
+* 通常在主函数的首行里调用此函数，注意，仅在Debug下有效
+*/
+void EnableMemLeakCheck()
+{
+	_CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
+}
+
 void main()
 {
+	EnableMemLeakCheck();
 	CTest1 obj;
 	obj.OnCreate();
 	obj.OnPaint();
