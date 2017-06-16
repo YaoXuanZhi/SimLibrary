@@ -257,40 +257,31 @@ public:
 			return;
 		}
 
-		if (IsAddedInFactory(Key))
-		{
-			ForwardContainter &temmp = m_mapContainer[Key];
-			typename ForwardContainter::iterator it = temmp.begin();
-			for(;it!=temmp.end();it++)
-			{
-				ImpForwarder *pTemp2 = *it;
-				//判断这两者的指针对应的实例信息是否相同
-				if(pTemp2->InvokeClass()->Equal(*pObj->InvokeClass()))
-				{
-					delete pObj;
-					pObj = NULL;
-					return;
-				}
-			}
-			m_mapContainer[Key].push_back(pObj);
-		}else{
-			delete pObj;
-			pObj = NULL;
-		}
-	}
-
-	bool IsAddedInFactory(TKey Key) 
-	{ 
-		return m_mapContainer.find(Key) != m_mapContainer.end() ? true : false; 
-	}
-
-	void AddContainerID(TKey Key)
-	{
 		if(!IsAddedInFactory(Key))
 		{
 			ForwardContainter obj;
 			m_mapContainer[Key]= obj;
 		}
+
+		ForwardContainter &temmp = m_mapContainer[Key];
+		typename ForwardContainter::iterator it = temmp.begin();
+		for(;it!=temmp.end();it++)
+		{
+			ImpForwarder *pTemp2 = *it;
+			//判断这两者的指针对应的实例信息是否相同
+			if(pTemp2->InvokeClass()->Equal(*pObj->InvokeClass()))
+			{
+				delete pObj;
+				pObj = NULL;
+				return;
+			}
+		}
+		m_mapContainer[Key].push_back(pObj);
+	}
+
+	bool IsAddedInFactory(TKey Key) 
+	{ 
+		return m_mapContainer.find(Key) != m_mapContainer.end() ? true : false; 
 	}
 
 	ForwardContainter* InvokeContanter(TKey Key)
