@@ -2,7 +2,7 @@
 *  @file     CShellChangeWatcher.h
 *  @brief    文件夹变动监控库
 *  @note
-*  在这里，所用到的Win32 API其实已经在高版本的VS之中其实已经支持了
+*  在这里，所用到的Win32 API其实已经在高版本的VS之中支持了
 *  不过，由于个人的原因，因此需要在VC 6.0下编译它，编写了一个类来
 *  动态调用所有可能用到的API，注意，由于SHGetPathFromIDList等系列
 *  API是自Win Xp才开始支持的，至于SHChangeNotifyRegister和
